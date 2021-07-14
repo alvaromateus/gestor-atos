@@ -1,4 +1,4 @@
-version: '2'
+version: '3.5'
 services:
     web:
         build: . 
@@ -7,4 +7,8 @@ services:
         volumes:
             - .:/code
         ports:
-            - "8000:8000"
+            - "8000:8000"        
+networks:
+    default:
+        external:
+            name: sisat_default

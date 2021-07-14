@@ -14,10 +14,16 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from rest_framework import routers
+from ato.api import viewsets as atoviewsets
 from django.conf.urls.static import static
-import os
-ROOT_PATH = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from django.conf import settings
+
+route = routers.DefaultRouter()
+route.register(r'ato', atoviewsets.AtoViewSet, basename='Atos') 
+
 urlpatterns = [
+    path('api/', include(route.urls), name='api'),
     path('admin/', admin.site.urls),
-] + static('/media/', document_root=os.path.join(ROOT_PATH, 'media'))
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,0 +1,9 @@
+{
+    "url_server": "http://177.7.165.206:8000",
+    "db_name": "atos",
+    "db_user": "postgres",
+    "db_pass": "defensoriapr",
+    "db_host": "postgres",
+    "db_port": "5432",
+    "secret_key": "c#(4a)&b*ny-@s@3%z)l@$9=9@5oghd)@@a&j&96n+ub7h3+qp"
+}

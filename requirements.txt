@@ -1,2 +1,4 @@
 Django
-django-reversion
+django-filter
+djangorestframework
+psycopg2
