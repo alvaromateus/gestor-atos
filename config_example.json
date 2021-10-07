@@ -1,0 +1,9 @@
+{
+    "url_server": "http://URLServidor",
+    "db_name": "atos",
+    "db_user": "postgres",
+    "db_pass": "senha_banco",
+    "db_host": "postgres",
+    "db_port": "5432",
+    "secret_key": "secret_key"
+}
