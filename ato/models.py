@@ -32,7 +32,10 @@ class Ato(models.Model):
     numero = models.IntegerField('Número', blank=False)
     ano = models.IntegerField('Ano', blank=False)
     tipo = models.PositiveSmallIntegerField(choices=LISTA_TIPO, blank=False)    
+    
     assuntos = models.ManyToManyField('Assunto', blank=False)
+    assuntos_secundarios = models.ManyToManyField('AssuntoSecundario', blank=True, null=True)
+
     setor_originario = models.ForeignKey('SetorOriginario', blank=False, default=None, on_delete=models.PROTECT)
     status = models.PositiveSmallIntegerField(choices=LISTA_STATUS, blank=False)
     texto = models.TextField('Texto documento', blank=True, null=True, default=None)    
@@ -73,7 +76,7 @@ class SetorOriginario(models.Model):
 
 class Assunto(models.Model):
     nome = models.CharField(max_length=200)
-    assuntos_secundario = models.ManyToManyField('AssuntoSecundario', blank=False)
+    assuntos_secundarios = models.ManyToManyField('AssuntoSecundario', blank=True, null=True)
 
     class Meta:        
         ordering = ['nome']
@@ -85,6 +88,8 @@ class AssuntoSecundario(models.Model):
     nome = models.CharField(max_length=200)    
 
     class Meta:        
+        verbose_name = u'Assunto Secundário'
+        verbose_name_plural = u'Assuntos Secundários'
         ordering = ['nome']
 
     def __str__(self):
