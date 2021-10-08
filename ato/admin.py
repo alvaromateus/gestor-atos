@@ -1,10 +1,14 @@
 from .models import Ato, SetorOriginario, Assunto
 from django.contrib import admin
+from rangefilter.filters import DateRangeFilter
 
 class AtoAdmin(admin.ModelAdmin):
     list_display = ('numero', 'ano', 'status', 'tipo')
+    filter_horizontal = ['atos_vinculados', 'assuntos']
     search_fields = ('numero','ano','texto')
-    list_filter = ('status', 'tipo','ano')
+    list_filter = (('data_inicial', DateRangeFilter), ('data_final', DateRangeFilter),
+        'status', 'tipo', 'setor_originario__nome',
+    )
 
 class TipoAdmin(admin.ModelAdmin):
     list_display = ('descricao',)
