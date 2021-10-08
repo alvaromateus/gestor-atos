@@ -9,6 +9,7 @@
 .vscode
 *.pid
 *.ipynb
+*.pyc
 settings_*.py
 wsgi_*.py
 restart.txt
