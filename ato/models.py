@@ -36,7 +36,21 @@ class Ato(models.Model):
     setor_originario = models.ForeignKey('SetorOriginario', blank=False, default=None, on_delete=models.PROTECT)
     status = models.PositiveSmallIntegerField(choices=LISTA_STATUS, blank=False)
     texto = models.TextField('Texto documento', blank=True, null=True, default=None)    
-    arquivo = models.FileField(verbose_name='Arquivo', upload_to=documento_file_name, null=True, blank=False, default=None)
+    
+    arquivo = models.FileField(verbose_name='Extrato Dioe', upload_to=documento_file_name, null=True, blank=False, default=None)
+    arquivo_02 = models.FileField(verbose_name='PDF Pesquisável', upload_to=documento_file_name, null=True, blank=True, default=None)
+    arquivo_03 = models.FileField(verbose_name='Arquivo editável (Word ou similar)', upload_to=documento_file_name, null=True, blank=True, default=None)
+    
+    documento_alterado = models.ForeignKey('Ato', blank=True, null=True, default=None, related_name="atos_alterados", 
+        verbose_name='Este documento altera outro? Caso positivo selecione o documento alterado', on_delete=models.PROTECT)
+    
+    documento_revogado = models.ForeignKey('Ato', blank=True, null=True, default=None, related_name="atos_revogados", 
+        verbose_name='Este documento revoga outro? Caso positivo selecione o documento revogado', on_delete=models.PROTECT)
+
+    atos_vinculados = models.ManyToManyField("self", verbose_name='Atos relacionados', null=True, blank=True, default=None)
+
+    data_inicial = models.DateField(null=True, blank=True, default=None, verbose_name='Data do início da vigência do ato')
+    data_final = models.DateField(null=True, blank=True, default=None, verbose_name='Data do final da vigência do ato')
 
     class Meta:
         verbose_name = u'Ato'
@@ -47,7 +61,19 @@ class Ato(models.Model):
         return str(self.numero) + " / " + str(self.ano)
         
 class SetorOriginario(models.Model):
-    nome = models.CharField('Nome', max_length=40, blank=True, null=True, default=None)    
+    nome = models.CharField('nome do setor originário', max_length=40, blank=True, null=True, default=None)    
+
+    class Meta:        
+        ordering = ['nome']
+        verbose_name = u'Setor Originário'
+        verbose_name_plural = u'Setores Originários'
+
+    def __str__(self):
+        return self.nome
+
+class Assunto(models.Model):
+    nome = models.CharField(max_length=200)
+    assuntos_secundario = models.ManyToManyField('AssuntoSecundario', blank=False)
 
     class Meta:        
         ordering = ['nome']
@@ -55,7 +81,7 @@ class SetorOriginario(models.Model):
     def __str__(self):
         return self.nome
 
-class Assunto(models.Model):
+class AssuntoSecundario(models.Model):
     nome = models.CharField(max_length=200)    
 
     class Meta:        
