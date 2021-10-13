@@ -14,11 +14,13 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from rest_framework import routers
 from ato.api import viewsets as atoviewsets
 from django.conf.urls.static import static
 from django.conf import settings
+from ato import views
+
 
 route = routers.DefaultRouter()
 route.register(r'ato', atoviewsets.AtoViewSet, basename='Atos') 
@@ -26,4 +28,7 @@ route.register(r'ato', atoviewsets.AtoViewSet, basename='Atos')
 urlpatterns = [
     path('api/', include(route.urls), name='api'),
     path('admin/', admin.site.urls),
+    path('ckeditor/', include('ckeditor_uploader.urls')),
+    path('get/ajax/assuntos', views.get_assuntos_secundarios, name="get_assuntos"),
+    path('get/ajax/numero_documento', views.get_numero_documento, name="get_assuntos"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,4 +1,6 @@
 from django.db import models
+from ckeditor.fields import RichTextField
+from datetime import date
 
 def documento_file_name(instance, filename):    
     ext = filename.split('.')[-1]    
@@ -6,13 +8,17 @@ def documento_file_name(instance, filename):
 
 class Ato(models.Model):
     STATUS_VIGENTE = 0
-    STATUS_REVOGADA = 1
-    STATUS_REVOGADA = 2
+    STATUS_REVOGADO = 1
+    STATUS_REVOGADO_PARCIALMENTE = 2
+    STATUS_ALTERADO = 3
+    STATUS_SEM_EFEITO = 4
 
     LISTA_STATUS = (
         (STATUS_VIGENTE, u'Vigente'),
-        (STATUS_REVOGADA, u'Revogada'),
-        (STATUS_REVOGADA, u'Sem efeito'),
+        (STATUS_REVOGADO, u'Revogado'),
+        (STATUS_REVOGADO_PARCIALMENTE, u'Revogado parcialmente'),
+        (STATUS_ALTERADO, u'Alterado'),
+        (STATUS_REVOGADO, u'Sem efeito'),
     )
 
     TIPO_RESOLUCAO = 0
@@ -29,28 +35,39 @@ class Ato(models.Model):
         (TIPO_NORMATIVA, u'Instrução Normativa'),
     )
 
-    numero = models.IntegerField('Número', blank=False)
-    ano = models.IntegerField('Ano', blank=False)
-    tipo = models.PositiveSmallIntegerField(choices=LISTA_TIPO, blank=False)    
-    
-    assuntos = models.ManyToManyField('Assunto', blank=False)
-    assuntos_secundarios = models.ManyToManyField('AssuntoSecundario', blank=True, null=True)
+    TIPO_REVOGADO = 0
+    TIPO_REVOGADO_PARCIAL = 1
 
+    LISTA_REVOGADO = (
+        (TIPO_REVOGADO, u'Revogado totalmente'),
+        (TIPO_REVOGADO_PARCIAL, u'Revogado parcialmente'),
+    )
+
+    numero = models.IntegerField('Número', blank=False)
+    data_documento = models.DateField(null=False, blank=False, verbose_name='Data do documento', default=date.today())
+    ano = models.IntegerField('Ano', null=True, blank=True)
+
+    tipo = models.PositiveSmallIntegerField(choices=LISTA_TIPO, blank=False)
     setor_originario = models.ForeignKey('SetorOriginario', blank=False, default=None, on_delete=models.PROTECT)
     status = models.PositiveSmallIntegerField(choices=LISTA_STATUS, blank=False)
-    texto = models.TextField('Texto documento', blank=True, null=True, default=None)    
+    
+    assuntos = models.ManyToManyField('Assunto', blank=False)
+    assuntos_secundarios = models.ManyToManyField('AssuntoSecundario', blank=True, null=True)    
+    
+    texto = RichTextField('Texto documento', blank=False, null=False, default=None)  
     
     arquivo = models.FileField(verbose_name='Extrato Dioe', upload_to=documento_file_name, null=True, blank=False, default=None)
-    arquivo_02 = models.FileField(verbose_name='PDF Pesquisável', upload_to=documento_file_name, null=True, blank=True, default=None)
-    arquivo_03 = models.FileField(verbose_name='Arquivo editável (Word ou similar)', upload_to=documento_file_name, null=True, blank=True, default=None)
+    arquivo02 = models.FileField(verbose_name='PDF Pesquisável', upload_to=documento_file_name, null=True, blank=True, default=None)
+    arquivo03 = models.FileField(verbose_name='Arquivo editável (Word ou similar)', upload_to=documento_file_name, null=True, blank=True, default=None)
     
-    documento_alterado = models.ForeignKey('Ato', blank=True, null=True, default=None, related_name="atos_alterados", 
-        verbose_name='Este documento altera outro? Caso positivo selecione o documento alterado', on_delete=models.PROTECT)
-    
-    documento_revogado = models.ForeignKey('Ato', blank=True, null=True, default=None, related_name="atos_revogados", 
-        verbose_name='Este documento revoga outro? Caso positivo selecione o documento revogado', on_delete=models.PROTECT)
+    eh_alterador = models.BooleanField('Este documento altera outro?', default=False)
+    documento_alterado = models.ManyToManyField("self", verbose_name='Documento(s) alterado(s)', null=True, blank=True, default=None)         
 
-    atos_vinculados = models.ManyToManyField("self", verbose_name='Atos relacionados', null=True, blank=True, default=None)
+    eh_revogador = models.BooleanField('Este documento revoga outro?', default=False)    
+    documento_revogado = models.ManyToManyField("self", verbose_name='Documento(s) revogado(s)', null=True, blank=True, default=None)
+    tipo_revogacao = models.PositiveSmallIntegerField(choices=LISTA_REVOGADO, null=True, blank=True)
+
+    atos_vinculados = models.ManyToManyField("self", verbose_name='Outros atos relacionados', null=True, blank=True, default=None)
 
     data_inicial = models.DateField(null=True, blank=True, default=None, verbose_name='Data do início da vigência do ato')
     data_final = models.DateField(null=True, blank=True, default=None, verbose_name='Data do final da vigência do ato')
@@ -59,10 +76,35 @@ class Ato(models.Model):
         verbose_name = u'Ato'
         verbose_name_plural = u'Documentos emitidos'
         ordering = ['ano']
+        unique_together = ('ano', 'numero', 'tipo','setor_originario',)
     
+    class Media:
+        js = ("ato.js",)
+
     def __str__(self):
-        return str(self.numero) + " / " + str(self.ano)
-        
+        return self.get_status + " nº " + str(self.numero) + "/" + str(self.ano) + " de " + self.get_data_por_extenso
+
+    @property
+    def get_data_por_extenso(self):        
+        mes_ext = {1: 'janeiro', 2 : 'fevereiro', 3: 'março', 4: 'abril', 5: 'maio', 6: 'junho', 
+            7: 'julho', 8: 'agosto', 9: 'setembro', 10: 'outubro', 11: 'novembro', 12: 'dezembro'}
+        data = self.data_documento
+        data_string = '{}/{}/{}'.format(data.day, data.month,data.year)        
+        dia, mes, ano = data_string.split("/")
+        return str(('%s de %s de %s' % (dia, mes_ext[int(mes)], ano)))
+
+    def save(self, *args, **kwargs):        
+        self.ano = '{}'.format(self.data_documento.year)
+        super(Ato, self).save(*args, **kwargs)
+
+    @property
+    def get_status(self):
+        if self.tipo == 0: return "Resolução"
+        if self.tipo == 1: return "Portaria"
+        if self.tipo == 2: return "Edital"
+        if self.tipo == 3: return "Deliberação"
+        if self.tipo == 4: return "Instrução Normativa"    
+
 class SetorOriginario(models.Model):
     nome = models.CharField('nome do setor originário', max_length=40, blank=True, null=True, default=None)    
 
@@ -75,17 +117,23 @@ class SetorOriginario(models.Model):
         return self.nome
 
 class Assunto(models.Model):
-    nome = models.CharField(max_length=200)
-    assuntos_secundarios = models.ManyToManyField('AssuntoSecundario', blank=True, null=True)
+    nome = models.CharField('assunto principal', max_length=200)
 
     class Meta:        
         ordering = ['nome']
+        verbose_name = u'Assunto Principal'
+        verbose_name_plural = u'Assuntos Principais'
 
     def __str__(self):
         return self.nome
 
+    @property
+    def get_assuntos_secundarios(self):
+        return AssuntoSecundario.objects.filter(assuntos_secundarios__id=self.id)
+
 class AssuntoSecundario(models.Model):
-    nome = models.CharField(max_length=200)    
+    nome = models.CharField('assunto secundário', max_length=200)    
+    assuntos = models.ManyToManyField('Assunto', blank=True, null=True)
 
     class Meta:        
         verbose_name = u'Assunto Secundário'

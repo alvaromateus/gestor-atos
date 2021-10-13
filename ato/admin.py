@@ -1,14 +1,17 @@
 from .models import Ato, SetorOriginario, Assunto, AssuntoSecundario
 from django.contrib import admin
 from rangefilter.filters import DateRangeFilter
+from ato.forms import AtoFieldForm
 
 class AtoAdmin(admin.ModelAdmin):
-    list_display = ('numero', 'ano', 'status', 'tipo')
-    filter_horizontal = ['atos_vinculados', 'assuntos', 'assuntos_secundarios']
-    search_fields = ('numero','ano','texto')
+    list_display = ('numero', 'ano', 'data_documento', 'status', 'setor_originario', 'tipo')
+    filter_horizontal = ['documento_alterado','documento_revogado','atos_vinculados', 'assuntos', 'assuntos_secundarios']
+    search_fields = ('numero','ano','texto', 'data_documento', 'assuntos__nome')
     list_filter = (('data_inicial', DateRangeFilter), ('data_final', DateRangeFilter),
-        'status', 'tipo', 'setor_originario__nome',
+        'status', 'tipo', 'setor_originario__nome','assuntos__nome',
     )
+    exclude = ('ano',)    
+    form = AtoFieldForm
 
 class TipoAdmin(admin.ModelAdmin):
     list_display = ('descricao',)
@@ -18,10 +21,10 @@ class SetorOriginarioAdmin(admin.ModelAdmin):
 
 class AssuntoAdmin(admin.ModelAdmin):
     list_display = ('nome',)
-    filter_horizontal = ['assuntos_secundarios',]
 
 class AssuntoSecundarioAdmin(admin.ModelAdmin):
     list_display = ('nome',)
+    filter_horizontal = ['assuntos',]
 
 admin.site.register(Ato, AtoAdmin)
 admin.site.register(SetorOriginario, SetorOriginarioAdmin)

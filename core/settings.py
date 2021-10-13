@@ -31,6 +31,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['177.7.165.206', '127.0.0.1', 'localhost']
 
+CKEDITOR_BASEPATH = "/static/ckeditor/ckeditor/"
+CKEDITOR_FILENAME_GENERATOR = 'utils.get_filename'
+CKEDITOR_UPLOAD_PATH = "uploads /"
 
 # Application definition
 
@@ -44,6 +47,7 @@ INSTALLED_APPS = [
     'ato',
     'rest_framework',
     'rangefilter',
+    'ckeditor',
 ]
 
 MIDDLEWARE = [
@@ -75,6 +79,14 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'core.wsgi.application'
+JQUERY_URL = True
+SESSION_COOKIE_NAME = 'sessionid_atos'
+
+if os.environ.get('RUN_MAIN') or os.environ.get('WERKZEUG_RUN_MAIN'):
+    import ptvsd
+
+    ptvsd.enable_attach(address=('0.0.0.0', 3000))
+    print('Attached!')
 
 
 # Database
@@ -138,6 +150,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "/static/")
+STATICFILES_DIRS = ( os.path.join('static'), )
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -146,3 +159,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_ROOT = os.path.join(ROOT_PATH, 'media')
 
 MEDIA_URL = '/media/'
+
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'Custom',
+        'toolbar_Custom': [
+            ['Bold', 'Italic', 'Underline', 'Strike', 'Table','Find','ExportPdf','Preview','Format', 'FontSize', 'TextColor', 'BGColor', 'Maximize'],
+            ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
+            
+        ]
+    }
+}
