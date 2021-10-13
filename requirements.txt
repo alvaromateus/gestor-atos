@@ -3,3 +3,5 @@ django-filter
 djangorestframework
 psycopg2
 django-admin-rangefilter
+django-ckeditor
+ptvsd
