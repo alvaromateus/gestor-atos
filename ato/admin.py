@@ -13,22 +13,25 @@ class AtoAdmin(admin.ModelAdmin):
     exclude = ('ano',)    
     form = AtoFieldForm
 
-    def save_model(self, request, obj, form, change):        
-        if obj.documentos_revogados:
-            documentos = obj.documentos_revogados.all()
-            for documento in documentos:
-                temp = Ato.objects.get(id=documento.id)
-                if obj.tipo_revogacao == 0: # revogação total ou parcial
-                    temp.status = 1
-                else:
-                    temp.status = 2
-                temp.save()
-        if obj.documentos_alterados:
-            documentos = obj.documentos_alterados.all()
-            for documento in documentos:
-                temp = Ato.objects.get(id=documento.id)
-                temp.status = 3
-                temp.save()
+    def save_model(self, request, obj, form, change):
+        try:
+            if obj.documentos_revogados:
+                documentos = obj.documentos_revogados.all()
+                for documento in documentos:
+                    temp = Ato.objects.get(id=documento.id)
+                    if obj.tipo_revogacao == 0: # revogação total ou parcial
+                        temp.status = 1
+                    else:
+                        temp.status = 2
+                    temp.save()
+            if obj.documentos_alterados:
+                documentos = obj.documentos_alterados.all()
+                for documento in documentos:
+                    temp = Ato.objects.get(id=documento.id)
+                    temp.status = 3
+                    temp.save()
+        except:
+            print("Erro de inserção")
 
         super(AtoAdmin, self).save_model(request, obj, form, change)
 

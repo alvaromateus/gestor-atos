@@ -31,17 +31,17 @@ $(document).ready(function() {
   // Caso o documento possua documentos alteradores ou revogadores mostra documentos
   var id_eh_alterador = document.getElementById("id_eh_alterador");  
   if (id_eh_alterador.checked) {
-    document.getElementsByClassName("form-row field-documento_alterado")[0].classList.remove("hide");
+    document.getElementsByClassName("form-row field-documentos_alterados")[0].classList.remove("hide");
   } else {
-    document.getElementsByClassName("form-row field-documento_alterado")[0].classList.add("hide");
+    document.getElementsByClassName("form-row field-documentos_alterados")[0].classList.add("hide");
   }  
-  
+
   var id_eh_revogador = document.getElementById("id_eh_revogador");  
   if (id_eh_revogador.checked) {        
-    document.getElementsByClassName("form-row field-documento_revogado")[0].classList.remove("hide");
+    document.getElementsByClassName("form-row field-documentos_revogados")[0].classList.remove("hide");
     document.getElementsByClassName("form-row field-tipo_revogacao")[0].classList.remove("hide");
   } else {
-    document.getElementsByClassName("form-row field-documento_revogado")[0].classList.add("hide");
+    document.getElementsByClassName("form-row field-documentos_revogados")[0].classList.add("hide");
     document.getElementsByClassName("form-row field-tipo_revogacao")[0].classList.add("hide");
   }
 
@@ -67,7 +67,7 @@ $(document).on("change", '#id_status', function() {
 // Gatilho para mostrar/esconder div data suspensão documento
 $(document).on("change", '#id_eh_alterador', function() {
   var remember = document.getElementById("id_eh_alterador");
-  item = document.getElementsByClassName("form-row field-documento_alterado")[0]
+  item = document.getElementsByClassName("form-row field-documentos_alterados")[0]
   if (remember.checked) { 
       item.classList.remove("hide");
   } else {
@@ -78,13 +78,13 @@ $(document).on("change", '#id_eh_alterador', function() {
 // Gatilho para mostrar/esconder div documentos se é um ato revogador
 $(document).on("change", '#id_eh_revogador', function() {
   var remember = document.getElementById("id_eh_revogador");
-  documento_revogado = document.getElementsByClassName("form-row field-documento_revogado")[0]
+  documentos_revogados = document.getElementsByClassName("form-row field-documentos_revogados")[0]
   tipo_revogacao = document.getElementsByClassName("form-row field-tipo_revogacao")[0]
   if (remember.checked) {
-      documento_revogado.classList.remove("hide");
+      documentos_revogados.classList.remove("hide");
       tipo_revogacao.classList.remove("hide");
     } else {
-      documento_revogado.classList.add("hide");
+      documentos_revogados.classList.add("hide");
       tipo_revogacao.classList.add("hide");
     }        
 });
@@ -123,7 +123,7 @@ function desabilita_campos_numeracao() {
   $("select[name='setor_originario']").prop('disabled', true);
   $(".field-data_documento")[0].hidden=true;  
   status_documento = document.getElementById("id_status").value;
-  if (status_documento == 0) { // status igual deixa alterar, mas remove remove demais opções deixando só sem efeito)    
+  if (status_documento == 0) { // status igual a 0 deixa alterar, mas remove remove demais opções deixando só sem efeito)    
     // Status exaurido será tratado pela task
     // Status revogado, revogado parcialmente ou alterado é alterado quando é criado um novo documento revogante ou alterante
     $("#id_status option[value='1']").remove();
@@ -132,6 +132,8 @@ function desabilita_campos_numeracao() {
     $("#id_status option[value='5']").remove();
   } else { // demais status desabilita a opção de alteração de status
     $("#id_status").prop('disabled', true);    
+    $("#id_status").prop('disabled', true);    
+    
   }
 }
 

@@ -1051,7 +1051,7 @@ table#change-history tbody th {
     padding: 10px 20px;
 }
 
-.field-documento_alterado, .field-documento_revogado, .field-tipo_revogacao {
+.field-documentos_alterados, .field-documentos_revogados, .field-tipo_revogacao {
     background: rgb(233, 233, 233);
     color: orangered;
     padding: .5em;
