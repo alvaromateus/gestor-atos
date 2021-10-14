@@ -1,5 +1,5 @@
 from django import forms
-from .models import AssuntoSecundario
+from .models import Ato
 from django.contrib.admin.widgets import FilteredSelectMultiple
 
 class AtoFieldForm(forms.ModelForm):
@@ -10,6 +10,11 @@ class AtoFieldForm(forms.ModelForm):
     numero = forms.CharField(
         widget=forms.TextInput(attrs={'readonly':'readonly'})
     )
+
+    def __init__(self,*args,**kwargs):
+        super (AtoFieldForm,self ).__init__(*args,**kwargs) # populates the post
+        self.fields['documentos_revogados'].queryset = Ato.objects.filter(status__in=[0,2,3]) 
+        self.fields['documentos_alterados'].queryset = Ato.objects.filter(status__in=[0,2,3]) 
 
     def clean(self):
         # validação se há seleção dos atributos quando revogado ou alterado é selecionado

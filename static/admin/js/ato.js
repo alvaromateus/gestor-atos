@@ -123,17 +123,46 @@ function desabilita_campos_numeracao() {
   $("select[name='setor_originario']").prop('disabled', true);
   $(".field-data_documento")[0].hidden=true;  
   status_documento = document.getElementById("id_status").value;
-  if (status_documento == 0) { // status igual a 0 deixa alterar, mas remove remove demais opções deixando só sem efeito)    
-    // Status exaurido será tratado pela task
-    // Status revogado, revogado parcialmente ou alterado é alterado quando é criado um novo documento revogante ou alterante
+  
+  // Status exaurido será tratado pela task
+  // Status revogado, revogado parcialmente ou alterado é modificado quando é criado um novo documento revogante ou alterante
+  if (status_documento == 0) { // remove opções de status que devem ficar indisponíveis 
     $("#id_status option[value='1']").remove();
     $("#id_status option[value='2']").remove();
     $("#id_status option[value='3']").remove();
-    $("#id_status option[value='5']").remove();
-  } else { // demais status desabilita a opção de alteração de status
-    $("#id_status").prop('disabled', true);    
-    $("#id_status").prop('disabled', true);    
-    
+    $("#id_status option[value='5']").remove();   
+  }
+  if (status_documento == 2) { // remove opções de status que devem ficar indisponíveis     
+    $("#id_status option[value='0']").remove();
+    $("#id_status option[value='1']").remove();
+    $("#id_status option[value='3']").remove();      
+    $("#id_status option[value='4']").remove();
+    $("#id_status option[value='5']").remove();  
+  }
+  if (status_documento == 3) { // remove opções de status que devem ficar indisponíveis     
+    $("#id_status option[value='0']").remove();
+    $("#id_status option[value='1']").remove();
+    $("#id_status option[value='2']").remove();      
+    $("#id_status option[value='4']").remove();
+    $("#id_status option[value='5']").remove();  
+  }  
+  if (status_documento != 0 ) { // Quando status é diferente de "Vigente" desabilita opções que interagem com outros atos
+    if (status_documento != 2) { // TODO (inserir operador OU)
+      if (status_documento != 3) {
+        $("#id_status").prop('disabled', true);    
+        $(".field-eh_revogador")[0].hidden=true;
+        $(".field-documentos_revogados")[0].hidden=true;
+        $(".field-tipo_revogacao")[0].hidden=true;
+        $(".field-eh_alterador")[0].hidden=true;
+        $(".field-documentos_alterados")[0].hidden=true;
+        $(".field-data_inicial")[0].hidden=true;
+        $(".field-data_final")[0].hidden=true;
+        /*$("#id_assuntos_from").prop('disabled', true); 
+        $("#id_assuntos_secundarios_from").prop('disabled', true); 
+        $("#cke_id_texto").prop('disabled', true); 
+        $("#cke_id_texto_arialbl").prop('disabled', true);*/  
+      }
+    }    
   }
 }
 
