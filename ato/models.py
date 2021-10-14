@@ -12,13 +12,17 @@ class Ato(models.Model):
     STATUS_REVOGADO_PARCIALMENTE = 2
     STATUS_ALTERADO = 3
     STATUS_SEM_EFEITO = 4
+    STATUS_EXAURIDO = 5
+    STATUS_SUSPENSO = 6
 
     LISTA_STATUS = (
         (STATUS_VIGENTE, u'Vigente'),
         (STATUS_REVOGADO, u'Revogado'),
         (STATUS_REVOGADO_PARCIALMENTE, u'Revogado parcialmente'),
         (STATUS_ALTERADO, u'Alterado'),
-        (STATUS_REVOGADO, u'Sem efeito'),
+        (STATUS_SEM_EFEITO, u'Sem efeito'),
+        (STATUS_EXAURIDO, u'Exaurido'),
+        (STATUS_SUSPENSO, u'Suspenso'),
     )
 
     TIPO_RESOLUCAO = 0
@@ -49,7 +53,9 @@ class Ato(models.Model):
 
     tipo = models.PositiveSmallIntegerField(choices=LISTA_TIPO, blank=False)
     setor_originario = models.ForeignKey('SetorOriginario', blank=False, default=None, on_delete=models.PROTECT)
-    status = models.PositiveSmallIntegerField(choices=LISTA_STATUS, blank=False)
+    status = models.PositiveSmallIntegerField(choices=LISTA_STATUS, blank=False, default=0)
+
+    data_suspensao = models.DateField(null=True, blank=True, default=None, verbose_name='Data da suspensão do ato')
     
     assuntos = models.ManyToManyField('Assunto', blank=False)
     assuntos_secundarios = models.ManyToManyField('AssuntoSecundario', blank=True, null=True)    
@@ -61,10 +67,10 @@ class Ato(models.Model):
     arquivo03 = models.FileField(verbose_name='Arquivo editável (Word ou similar)', upload_to=documento_file_name, null=True, blank=True, default=None)
     
     eh_alterador = models.BooleanField('Este documento altera outro?', default=False)
-    documento_alterado = models.ManyToManyField("self", verbose_name='Documento(s) alterado(s)', null=True, blank=True, default=None)         
+    documentos_alterados = models.ManyToManyField("self", verbose_name='Documento(s) alterado(s)', null=True, blank=True, default=None)         
 
     eh_revogador = models.BooleanField('Este documento revoga outro?', default=False)    
-    documento_revogado = models.ManyToManyField("self", verbose_name='Documento(s) revogado(s)', null=True, blank=True, default=None)
+    documentos_revogados = models.ManyToManyField("self", verbose_name='Documento(s) revogado(s)', null=True, blank=True, default=None)
     tipo_revogacao = models.PositiveSmallIntegerField(choices=LISTA_REVOGADO, null=True, blank=True)
 
     atos_vinculados = models.ManyToManyField("self", verbose_name='Outros atos relacionados', null=True, blank=True, default=None)
@@ -76,7 +82,7 @@ class Ato(models.Model):
         verbose_name = u'Ato'
         verbose_name_plural = u'Documentos emitidos'
         ordering = ['ano']
-        unique_together = ('ano', 'numero', 'tipo','setor_originario',)
+        unique_together = ('ano', 'numero', 'tipo','setor_originario','status',)
     
     class Media:
         js = ("ato.js",)
@@ -93,7 +99,7 @@ class Ato(models.Model):
         dia, mes, ano = data_string.split("/")
         return str(('%s de %s de %s' % (dia, mes_ext[int(mes)], ano)))
 
-    def save(self, *args, **kwargs):        
+    def save(self, *args, **kwargs):                
         self.ano = '{}'.format(self.data_documento.year)
         super(Ato, self).save(*args, **kwargs)
 
