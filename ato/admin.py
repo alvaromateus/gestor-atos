@@ -6,34 +6,40 @@ from ato.forms import AtoFieldForm
 class AtoAdmin(admin.ModelAdmin):
     list_display = ('numero', 'ano', 'data_documento', 'status', 'setor_originario', 'tipo', 'data_suspensao')
     filter_horizontal = ['documentos_alterados','documentos_revogados','atos_vinculados', 'assuntos', 'assuntos_secundarios']
-    search_fields = ('numero','ano','texto', 'data_documento', 'assuntos__nome')
+    search_fields = ('numero','ano','texto', 'data_documento', 'assuntos__nome', 'setor_originario__nome', 'setor_originario__sigla')
     list_filter = (('data_inicial', DateRangeFilter), ('data_final', DateRangeFilter),
         'status', 'tipo', 'setor_originario__nome','assuntos__nome',
     )
     exclude = ('ano',)    
     form = AtoFieldForm
 
-    def save_model(self, request, obj, form, change):
-        try:
-            if obj.documentos_revogados:
-                documentos = obj.documentos_revogados.all()
-                for documento in documentos:
-                    temp = Ato.objects.get(id=documento.id)
-                    if obj.tipo_revogacao == 0: # revogação total ou parcial
-                        temp.status = 1
-                    else:
-                        temp.status = 2
-                    temp.save()
-            if obj.documentos_alterados:
-                documentos = obj.documentos_alterados.all()
-                for documento in documentos:
-                    temp = Ato.objects.get(id=documento.id)
-                    temp.status = 3
-                    temp.save()
-        except:
-            print("Erro de inserção")
-
+    def save_model(self, request, obj, form, change):            
         super(AtoAdmin, self).save_model(request, obj, form, change)
+        revogados = Ato.objects.filter(id__in=request.POST.getlist('documentos_revogados'))        
+        if revogados:
+            for revogado in revogados:
+                obj.documentos_revogados.add(revogado)
+
+            documentos = obj.documentos_revogados.all()
+            for documento in documentos:
+                temp = Ato.objects.get(id=documento.id)
+                if obj.tipo_revogacao == 0: # revogação total 
+                    temp.status = 1
+                else: # revogação parcial
+                    temp.status = 2
+                temp.save()
+        
+        alterados = Ato.objects.filter(id__in=request.POST.getlist('documentos_alterados'))
+        if alterados:
+            for alterado in alterados:
+                obj.documentos_alterados.add(alterado)
+
+            documentos = obj.documentos_alterados.all()
+            for documento in documentos:
+                temp = Ato.objects.get(id=documento.id)
+                temp.status = 3
+                temp.save()
+        
 
 class TipoAdmin(admin.ModelAdmin):
     list_display = ('descricao',)

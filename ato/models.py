@@ -88,7 +88,7 @@ class Ato(models.Model):
         js = ("ato.js",)
 
     def __str__(self):
-        return self.get_status + " nº " + str(self.numero) + "/" + str(self.ano) + " de " + self.get_data_por_extenso
+        return self.get_status + " nº " + str(self.numero) + "/" + str(self.ano) + " de " + self.get_data_por_extenso + " (" + str(self.setor_originario.sigla) + ")"
 
     @property
     def get_data_por_extenso(self):        
@@ -109,10 +109,11 @@ class Ato(models.Model):
         if self.tipo == 1: return "Portaria"
         if self.tipo == 2: return "Edital"
         if self.tipo == 3: return "Deliberação"
-        if self.tipo == 4: return "Instrução Normativa"    
+        if self.tipo == 4: return "Instrução Normativa"
 
 class SetorOriginario(models.Model):
     nome = models.CharField('nome do setor originário', max_length=40, blank=True, null=True, default=None)    
+    sigla = models.CharField('sigla', max_length=5, blank=True, null=True, default=None)    
 
     class Meta:        
         ordering = ['nome']
