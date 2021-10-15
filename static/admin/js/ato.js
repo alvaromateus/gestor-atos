@@ -126,25 +126,39 @@ function desabilita_campos_numeracao() {
   
   // Status exaurido será tratado pela task
   // Status revogado, revogado parcialmente ou alterado é modificado quando é criado um novo documento revogante ou alterante
-  if (status_documento == 0) { // remove opções de status que devem ficar indisponíveis 
+  if (status_documento == 0) { // VIGENTE - remove opções de status que devem ficar indisponíveis 
     $("#id_status option[value='1']").remove();
     $("#id_status option[value='2']").remove();
     $("#id_status option[value='3']").remove();
     $("#id_status option[value='5']").remove();   
   }
-  if (status_documento == 2) { // remove opções de status que devem ficar indisponíveis     
+  if (status_documento == 2) { // REVOGADO PARCIALMENTE - remove opções de status que devem ficar indisponíveis     
     $("#id_status option[value='0']").remove();
     $("#id_status option[value='1']").remove();
     $("#id_status option[value='3']").remove();      
     $("#id_status option[value='4']").remove();
     $("#id_status option[value='5']").remove();  
+    $(".field-eh_revogador")[0].hidden=true;
+    $(".field-documentos_revogados")[0].hidden=true;
+    $(".field-tipo_revogacao")[0].hidden=true;
+    $(".field-eh_alterador")[0].hidden=true;
+    $(".field-documentos_alterados")[0].hidden=true;
+    $(".field-data_inicial")[0].hidden=true;
+    $(".field-data_final")[0].hidden=true;
   }
-  if (status_documento == 3) { // remove opções de status que devem ficar indisponíveis     
+  if (status_documento == 3) { // ALTERADO - remove opções de status que devem ficar indisponíveis     
     $("#id_status option[value='0']").remove();
     $("#id_status option[value='1']").remove();
     $("#id_status option[value='2']").remove();      
     $("#id_status option[value='4']").remove();
     $("#id_status option[value='5']").remove();  
+    $(".field-eh_revogador")[0].hidden=true;
+    $(".field-documentos_revogados")[0].hidden=true;
+    $(".field-tipo_revogacao")[0].hidden=true;
+    $(".field-eh_alterador")[0].hidden=true;
+    $(".field-documentos_alterados")[0].hidden=true;
+    $(".field-data_inicial")[0].hidden=true;
+    $(".field-data_final")[0].hidden=true;
   }  
   if (status_documento != 0 ) { // Quando status é diferente de "Vigente" desabilita opções que interagem com outros atos
     if (status_documento != 2) { // TODO (inserir operador OU)
