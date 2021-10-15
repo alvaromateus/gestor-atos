@@ -20,6 +20,7 @@ from ato.api import viewsets as atoviewsets
 from django.conf.urls.static import static
 from django.conf import settings
 from ato import views
+from django.views.generic.base import RedirectView
 
 
 route = routers.DefaultRouter()
@@ -31,4 +32,5 @@ urlpatterns = [
     path('ckeditor/', include('ckeditor_uploader.urls')),
     path('get/ajax/assuntos', views.get_assuntos_secundarios, name="get_assuntos"),
     path('get/ajax/numero_documento', views.get_numero_documento, name="get_assuntos"),
+    path('', RedirectView.as_view(url='/admin/ato/ato'))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
