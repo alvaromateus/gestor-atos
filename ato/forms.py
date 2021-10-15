@@ -1,6 +1,7 @@
 from django import forms
 from .models import Ato
 from django.contrib.admin.widgets import FilteredSelectMultiple
+from django.db.models import Q
 
 class AtoFieldForm(forms.ModelForm):
 
@@ -12,10 +13,16 @@ class AtoFieldForm(forms.ModelForm):
     )
 
     def __init__(self,*args,**kwargs):
-        super (AtoFieldForm,self ).__init__(*args,**kwargs) # populates the post
-        self.fields['documentos_revogados'].queryset = Ato.objects.filter(status__in=[0,2,3]) 
-        self.fields['documentos_alterados'].queryset = Ato.objects.filter(status__in=[0,2,3]) 
-
+        super (AtoFieldForm,self ).__init__(*args,**kwargs) # Filtro para somente vigentes, parcialmente revogados e alterados, excluindo a si próprio
+        if self.instance.pk is not None: # se está no modo de edição
+            q = Q(status__in=[0,2,3]) | Q(id__in=self.instance.documentos_revogados.all())
+            self.fields['documentos_revogados'].queryset = Ato.objects.filter(q).exclude(id__exact=self.instance.id) 
+            self.fields['documentos_alterados'].queryset = Ato.objects.filter(q).exclude(id__exact=self.instance.id) 
+        else: # se está no modo de adição
+            q = Q(status__in=[0,2,3])
+            self.fields['documentos_revogados'].queryset = Ato.objects.filter(q)
+            self.fields['documentos_alterados'].queryset = Ato.objects.filter(q)
+            
     def clean(self):
         # validação se há seleção dos atributos quando revogado ou alterado é selecionado
         eh_revogador = self.cleaned_data.get('eh_revogador')        
