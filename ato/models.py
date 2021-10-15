@@ -6,7 +6,7 @@ def documento_file_name(instance, filename):
     ext = filename.split('.')[-1]    
     return str(instance.numero)+"-"+str(instance.ano) + "." + ext
 
-class Ato(models.Model):
+class Ato(models.Model):    
     STATUS_VIGENTE = 0
     STATUS_REVOGADO = 1
     STATUS_REVOGADO_PARCIALMENTE = 2
@@ -87,8 +87,8 @@ class Ato(models.Model):
     class Media:
         js = ("ato.js",)
 
-    def __str__(self):
-        return self.get_status + " nº " + str(self.numero) + "/" + str(self.ano) + " de " + self.get_data_por_extenso + " (" + str(self.setor_originario.sigla) + ")"
+    def __str__(self):        
+        return '{} nº {}/{} de {} ({})'.format(self.get_status, str(self.numero), str(self.ano), self.get_data_por_extenso, str(self.setor_originario.sigla))        
 
     @property
     def get_data_por_extenso(self):        
