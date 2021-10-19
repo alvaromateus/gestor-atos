@@ -1,14 +1,4 @@
 *.pyc
 .env
-ato/__pycache__/__init__.cpython-39.pyc
-ato/__pycache__/admin.cpython-39.pyc
-ato/__pycache__/apps.cpython-39.pyc
-ato/__pycache__/models.cpython-39.pyc
-ato/api/__pycache__/serializers.cpython-39.pyc
-ato/api/__pycache__/viewsets.cpython-39.pyc
-ato/migrations/__pycache__/__init__.cpython-39.pyc
-ato/migrations/__pycache__/0001_initial.cpython-39.pyc
-core/__pycache__/__init__.cpython-39.pyc
-core/__pycache__/settings.cpython-39.pyc
-core/__pycache__/urls.cpython-39.pyc
-core/__pycache__/wsgi.cpython-39.pyc
+*.rdb
+ato/__pycache__/*.*
