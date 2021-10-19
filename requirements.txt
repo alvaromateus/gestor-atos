@@ -5,3 +5,8 @@ psycopg2
 django-admin-rangefilter
 django-ckeditor
 ptvsd
+celery
+redis
+django-celery-beat
+django-celery
+psycopg2==2.8.6

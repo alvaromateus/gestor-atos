@@ -29,7 +29,7 @@ ROOT_PATH = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fi
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['177.7.165.206', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['177.7.165.206', '127.0.0.1', 'localhost', '*']
 
 CKEDITOR_BASEPATH = "/static/ckeditor/ckeditor/"
 CKEDITOR_FILENAME_GENERATOR = 'utils.get_filename'
@@ -47,7 +47,11 @@ INSTALLED_APPS = [
     'ato',
     'rest_framework',
     'rangefilter',
-    'ckeditor',
+    'ckeditor',    
+    'djcelery',
+    'django_celery_beat',
+    'taskapp',
+    
 ]
 
 MIDDLEWARE = [
@@ -169,4 +173,22 @@ CKEDITOR_CONFIGS = {
             
         ]
     }
+}
+
+REDIS_DATABASE_URL = "redis://redis:6379"
+REDIS_PROTOCOL, REDIS_HOST, REDIS_PORT = REDIS_DATABASE_URL.replace('/', '').split(':')
+
+CELERY_ENABLE_UTC = False
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_RESULT_BACKEND = "{}/2".format(REDIS_DATABASE_URL)
+# https://docs.celeryproject.org/en/stable/userguide/configuration.html#broker-settings
+BROKER_URL = "{}/2".format(REDIS_DATABASE_URL)
+BROKER_TRANSPORT_OPTIONS = {
+    'visibility_timeout': 300,
+}
+
+CONSTANCE_REDIS_CONNECTION = {
+    'host': REDIS_HOST,
+    'port': REDIS_PORT,
+    'db': 3,
 }

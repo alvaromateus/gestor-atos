@@ -3,6 +3,7 @@ FROM python:3.9-slim
 
 ENV PYTHONUNBUFFERED 1
 RUN apt-get update && apt-get install -y python-dev libpq-dev libssl-dev build-essential git-core libldap2-dev libsasl2-dev libfontconfig1 libxrender1 libfreetype6-dev
+RUN apt-get install -y redis-server redis-tools
 # Cria diretório onde vão ficar os fontes
 RUN mkdir /code
 

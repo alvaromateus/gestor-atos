@@ -1,5 +1,10 @@
 version: '3.5'
 services:
+    redis:
+      image: redis
+      volumes:
+       - ./data/redis/:/data/
+      restart: always
     web:
         build: . 
         image: busca_resolucoes:latest
@@ -7,9 +12,33 @@ services:
         volumes:
             - .:/code
         ports:
-            - "8000:8000"
-            - 3000:3000
-networks:
-    default:
-        external:
-            name: sisat_default
+            - 8000:8000
+            - 3000:3000        
+    worker_geral:        
+        env_file:
+            - .env
+        environment:
+          - C_FORCE_ROOT=true
+        command: ["celery", "--app=taskapp", "worker", "--queues=default,geral", "--concurrency=4", "-n worker-geral@%h"]
+        depends_on:
+          - redis        
+        image: busca_resolucoes:latest
+        restart: always    
+    beat:
+        env_file:
+            - .env
+        command: ["celery", "--app=taskapp", "beat", "--loglevel", "INFO", "--scheduler=django_celery_beat.schedulers:DatabaseScheduler"]
+        depends_on:
+            - worker_geral        
+        image: busca_resolucoes:latest
+        restart: always
+    flower:
+        env_file:
+            - .env
+        command: ["flower", "--broker=redis://redis:6379/2", "--port=5555", "--purge_offline_workers=10"]
+        depends_on:
+        - worker_geral        
+        image: mher/flower:0.9.7
+        ports:
+        - 5555:5555
+        restart: always

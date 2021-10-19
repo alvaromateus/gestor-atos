@@ -88,7 +88,7 @@ class Ato(models.Model):
         js = ("ato.js",)
 
     def __str__(self):        
-        return '{} nº {}/{} de {} ({})'.format(self.get_status, str(self.numero), str(self.ano), self.get_data_por_extenso, str(self.setor_originario.sigla))        
+        return '{} nº {}/{} de {} ({})'.format(self.get_tipo, str(self.numero), str(self.ano), self.get_data_por_extenso, str(self.setor_originario.sigla))        
 
     @property
     def get_data_por_extenso(self):        
@@ -103,8 +103,35 @@ class Ato(models.Model):
         self.ano = '{}'.format(self.data_documento.year)
         super(Ato, self).save(*args, **kwargs)
 
+    def atos_revogantes(self):
+        if self.id:
+            revogantes = Ato.objects.filter(documentos_revogados=self)
+            if revogantes:
+                temp = ""
+                for revogante in revogantes:
+                    temp = temp+str(revogante)+"\n"
+            else:
+                temp = "Não há"
+        else:
+            temp = "Não há"
+        return temp
+
+
+    def atos_alterantes(self):
+        if self.id:
+            alterantes = Ato.objects.filter(documentos_alterados=self)
+            if alterantes:
+                temp = ""
+                for alterante in alterantes:
+                    temp = temp+str(alterante)+"\n"
+            else:
+                temp = "Não há"
+        else:
+            temp = "Não há"
+        return temp    
+
     @property
-    def get_status(self):
+    def get_tipo(self):
         if self.tipo == 0: return "Resolução"
         if self.tipo == 1: return "Portaria"
         if self.tipo == 2: return "Edital"
