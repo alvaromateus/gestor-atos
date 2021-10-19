@@ -1,0 +1,11 @@
+URL_SERVER = url
+DB_NAME = db
+DB_USER  = user
+DB_PASS = pass
+DB_HOST = host_banco
+DB_PORT = 5432
+SECRET_KEY = 
+
+REDIS_DATABASE_URL=redis://redis:6379
+CELERY_BROKER_URL=redis://redis:6379/3
+CELERY_RESULT_BACKEND=redis://redis:6379/3

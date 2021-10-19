@@ -13,8 +13,10 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 from pathlib import Path
 import os
 import json
-with open('config.json', 'r') as f:
-    config = json.load(f)
+from prettyconf import config
+
+#with open('.env', 'r') as f:
+    #config = json.load(f)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config['secret_key']
+SECRET_KEY = config('SECRET_KEY')
 ROOT_PATH = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -45,13 +47,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'ato',
+    'djcelery',
     'rest_framework',
     'rangefilter',
     'ckeditor',    
-    'djcelery',
     'django_celery_beat',
     'taskapp',
-    
 ]
 
 MIDDLEWARE = [
@@ -99,11 +100,11 @@ if os.environ.get('RUN_MAIN') or os.environ.get('WERKZEUG_RUN_MAIN'):
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': config['db_name'],
-        'USER': config['db_user'],
-        'PASSWORD': config['db_pass'],
-        'HOST': config['db_host'],
-        'PORT': config['db_port'],
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASS'),
+        'HOST': config('DB_HOST'),
+        'PORT': config('DB_PORT'),
     }
 }
 
@@ -175,14 +176,14 @@ CKEDITOR_CONFIGS = {
     }
 }
 
-REDIS_DATABASE_URL = "redis://redis:6379"
+REDIS_DATABASE_URL = config('REDIS_DATABASE_URL')
 REDIS_PROTOCOL, REDIS_HOST, REDIS_PORT = REDIS_DATABASE_URL.replace('/', '').split(':')
 
 CELERY_ENABLE_UTC = False
 CELERY_TIMEZONE = TIME_ZONE
-CELERY_RESULT_BACKEND = "{}/2".format(REDIS_DATABASE_URL)
+CELERY_RESULT_BACKEND = "{}/3".format(REDIS_DATABASE_URL)
 # https://docs.celeryproject.org/en/stable/userguide/configuration.html#broker-settings
-BROKER_URL = "{}/2".format(REDIS_DATABASE_URL)
+BROKER_URL = "{}/3".format(REDIS_DATABASE_URL)
 BROKER_TRANSPORT_OPTIONS = {
     'visibility_timeout': 300,
 }
