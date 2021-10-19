@@ -8,13 +8,13 @@ from django.apps import AppConfig, apps
 #from django.conf import settings
 
 _all__ = [
-    'TaskAppConfig',
+    'app',
+    'TaskAppConfig'
 ]
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
-BASE_REDIS_URL = os.environ.get('REDIS_URL', 'redis://redis:6379')
 
-app = Celery('solar_tasks')
+app = Celery('atos_tasks')
 
 
 class TaskAppConfig(AppConfig):
@@ -24,9 +24,7 @@ class TaskAppConfig(AppConfig):
     def ready(self):
         app.config_from_object('core.settings')
         installed_apps = [app_config.name for app_config in apps.get_app_configs()]
-        #app.autodiscover_tasks(lambda: installed_apps, force=True)
-        app.autodiscover_tasks()
-        app.conf.broker_url = BASE_REDIS_URL
+        app.autodiscover_tasks(lambda: installed_apps, force=True)
 
 
 @app.task(bind=True)
