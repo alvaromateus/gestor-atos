@@ -1,4 +1,9 @@
+!.gitignore
+*.db
 *.pyc
+*.pyo
+*.log
+*~
 .env
 *.rdb
 ato/__pycache__/*.*
