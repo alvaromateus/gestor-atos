@@ -47,7 +47,7 @@ class Ato(models.Model):
         (TIPO_REVOGADO_PARCIAL, u'Revogado parcialmente'),
     )
 
-    numero = models.IntegerField('Número', blank=False)
+    numero = models.IntegerField('nº', blank=False)
     data_documento = models.DateField(null=False, blank=False, verbose_name='Data do documento', default=date.today())
     ano = models.IntegerField('Ano', null=True, blank=True)
 

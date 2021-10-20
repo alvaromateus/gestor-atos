@@ -5,7 +5,7 @@ from ato.forms import AtoFieldForm
 
 class AtoAdmin(admin.ModelAdmin):
 
-    list_display = ('tipo', 'numero', 'ano', 'setor_originario', 'status', 'data_documento', 'data_suspensao')
+    list_display = ('tipo', 'numero', 'ano', 'setor_originario', 'status', 'data_documento', 'data_final', 'data_suspensao')
     filter_horizontal = ['documentos_alterados','documentos_revogados','atos_vinculados', 'assuntos', 'assuntos_secundarios']
     search_fields = ('numero','ano','texto', 'tipo', 'data_documento', 'assuntos__nome', 'setor_originario__nome', 'setor_originario__sigla')
     list_filter = (('data_inicial', DateRangeFilter), ('data_final', DateRangeFilter),
