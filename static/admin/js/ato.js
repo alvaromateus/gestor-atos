@@ -144,7 +144,7 @@ function desabilita_campos_numeracao() {
       document.getElementsByClassName("module aligned")[0].disabled = true;   // desabilita tudo      
       $(document).ready(function() { CKEDITOR.config.readOnly = true; });
   
-      $(".field-atos_revogantes")[0].hidden=true;
+      $(".field-atos_revogantes")[0].hidden=false;
       $(".field-atos_alterantes")[0].hidden=true;
       data_vigencia(1);
       console.log('Status revogado.');
