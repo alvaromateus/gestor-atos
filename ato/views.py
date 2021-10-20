@@ -7,7 +7,7 @@ import json
 def get_assuntos_secundarios(request):
     if request.is_ajax():
         assuntos = request.GET.get('ids[]', '')
-        assuntos_secundarios = AssuntoSecundario.objects.filter(assuntos__in=assuntos)
+        assuntos_secundarios = AssuntoSecundario.objects.filter(id__in=Assunto.objects.get(id=assuntos).assuntos_secundarios.all())
         assunto_dict = {}
         for assunto_secundario in assuntos_secundarios:
             assunto_dict[assunto_secundario.pk] = assunto_secundario.nome        

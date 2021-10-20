@@ -47,14 +47,14 @@ class TipoAdmin(admin.ModelAdmin):
     list_display = ('descricao',)
 
 class SetorOriginarioAdmin(admin.ModelAdmin):
-    list_display = ('nome',)
+    list_display = ('nome','sigla')
 
 class AssuntoAdmin(admin.ModelAdmin):
     list_display = ('nome',)
+    filter_horizontal = ['assuntos_secundarios',]
 
 class AssuntoSecundarioAdmin(admin.ModelAdmin):
     list_display = ('nome',)
-    filter_horizontal = ['assuntos',]
 
 admin.site.register(Ato, AtoAdmin)
 admin.site.register(SetorOriginario, SetorOriginarioAdmin)

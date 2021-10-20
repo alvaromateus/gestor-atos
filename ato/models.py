@@ -139,7 +139,7 @@ class Ato(models.Model):
         if self.tipo == 4: return "Instrução Normativa"
 
 class SetorOriginario(models.Model):
-    nome = models.CharField('nome do setor originário', max_length=40, blank=True, null=True, default=None)    
+    nome = models.CharField('nome do setor originário', max_length=60, blank=True, null=True, default=None)    
     sigla = models.CharField('sigla', max_length=5, blank=True, null=True, default=None)    
 
     class Meta:        
@@ -152,7 +152,7 @@ class SetorOriginario(models.Model):
 
 class Assunto(models.Model):
     nome = models.CharField('assunto principal', max_length=200)
-
+    assuntos_secundarios = models.ManyToManyField('AssuntoSecundario', blank=True, null=True)
     class Meta:        
         ordering = ['nome']
         verbose_name = u'Assunto Principal'
@@ -167,7 +167,6 @@ class Assunto(models.Model):
 
 class AssuntoSecundario(models.Model):
     nome = models.CharField('assunto secundário', max_length=200)    
-    assuntos = models.ManyToManyField('Assunto', blank=True, null=True)
 
     class Meta:        
         verbose_name = u'Assunto Secundário'
