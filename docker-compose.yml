@@ -4,11 +4,13 @@ services:
       image: redis
       restart: always
     web:
-        build: . 
+        build: 
+            context: .
         image: busca_resolucoes:latest
         command: python manage.py runserver 0.0.0.0:8000
         volumes:
             - .:/code
+            - ./media/:/code/media/
         ports:
             - 8000:8000
             - 3000:3000        

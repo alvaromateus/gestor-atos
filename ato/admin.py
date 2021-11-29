@@ -1,15 +1,14 @@
-from .models import Ato, SetorOriginario, Assunto, AssuntoSecundario
+from .models import *
 from django.contrib import admin
 from rangefilter.filters import DateRangeFilter
 from ato.forms import AtoFieldForm
 
 class AtoAdmin(admin.ModelAdmin):
-
-    list_display = ('tipo', 'numero', 'ano', 'setor_originario', 'status', 'data_documento', 'data_final', 'data_suspensao')
+    list_display = ('tipo', 'numero', 'ano', 'setor_originario', 'status', 'data_documento','publicacao')
     filter_horizontal = ['documentos_alterados','documentos_revogados','atos_vinculados', 'assuntos', 'assuntos_secundarios']
     search_fields = ('numero','ano','texto', 'tipo', 'data_documento', 'assuntos__nome', 'setor_originario__nome', 'setor_originario__sigla')
     list_filter = (('data_inicial', DateRangeFilter), ('data_final', DateRangeFilter),
-        'status', 'tipo', 'setor_originario__nome','assuntos__nome',
+        'status', 'tipo', 'setor_originario__nome','assuntos__nome', 'publicacao',
     )
     readonly_fields = ['atos_revogantes', 'atos_alterantes']
     exclude = ('ano',)
@@ -56,8 +55,16 @@ class AssuntoAdmin(admin.ModelAdmin):
 class AssuntoSecundarioAdmin(admin.ModelAdmin):
     list_display = ('nome',)
 
+class PublicacaoAdmin(admin.ModelAdmin):
+    list_display = ('numero', 'data')
+
+class TipoAtoAdmin(admin.ModelAdmin):
+    list_display = ('nome',)
+
 admin.site.register(Ato, AtoAdmin)
 admin.site.register(SetorOriginario, SetorOriginarioAdmin)
 admin.site.register(Assunto, AssuntoAdmin)
+admin.site.register(Publicacao, PublicacaoAdmin)
+admin.site.register(TipoAto, TipoAtoAdmin)
 admin.site.register(AssuntoSecundario, AssuntoSecundarioAdmin)
 admin.site.site_header = 'Gestor de Atos - DPE/PR'

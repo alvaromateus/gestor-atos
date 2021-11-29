@@ -6,6 +6,13 @@ def documento_file_name(instance, filename):
     ext = filename.split('.')[-1]    
     return str(instance.numero)+"-"+str(instance.ano) + "." + ext
 
+def get_data_por_extenso(data):
+        mes_ext = {1: 'janeiro', 2 : 'fevereiro', 3: 'março', 4: 'abril', 5: 'maio', 6: 'junho', 
+            7: 'julho', 8: 'agosto', 9: 'setembro', 10: 'outubro', 11: 'novembro', 12: 'dezembro'}
+        data_string = '{}/{}/{}'.format(data.day, data.month,data.year)        
+        dia, mes, ano = data_string.split("/")
+        return str(('%s de %s de %s' % (dia, mes_ext[int(mes)], ano)))
+
 class Ato(models.Model):    
     STATUS_VIGENTE = 0
     STATUS_REVOGADO = 1
@@ -31,14 +38,6 @@ class Ato(models.Model):
     TIPO_DELIBERACAO = 3
     TIPO_NORMATIVA = 4
 
-    LISTA_TIPO = (
-        (TIPO_RESOLUCAO, u'Resolução'),
-        (TIPO_PORTARIA, u'Portaria'),
-        (TIPO_EDITAL, u'Edital'),
-        (TIPO_DELIBERACAO, u'Deliberação'),
-        (TIPO_NORMATIVA, u'Instrução Normativa'),
-    )
-
     TIPO_REVOGADO = 0
     TIPO_REVOGADO_PARCIAL = 1
 
@@ -51,8 +50,9 @@ class Ato(models.Model):
     data_documento = models.DateField(null=False, blank=False, verbose_name='Data do documento', default=date.today())
     ano = models.IntegerField('Ano', null=True, blank=True)
 
-    tipo = models.PositiveSmallIntegerField(choices=LISTA_TIPO, blank=False)
     setor_originario = models.ForeignKey('SetorOriginario', blank=False, default=None, on_delete=models.PROTECT)
+    tipo = models.ForeignKey('TipoAto', null=True, blank=False, default=None, on_delete=models.PROTECT)
+    publicacao = models.ForeignKey('Publicacao', null=True, blank=False, default=None, on_delete=models.PROTECT)
     status = models.PositiveSmallIntegerField(choices=LISTA_STATUS, blank=False, default=0)
 
     data_suspensao = models.DateField(null=True, blank=True, default=None, verbose_name='Data da suspensão do ato')
@@ -80,7 +80,7 @@ class Ato(models.Model):
 
     class Meta:
         verbose_name = u'Ato'
-        verbose_name_plural = u'Documentos emitidos'
+        verbose_name_plural = u'Atos'
         ordering = ['ano']
         unique_together = ('ano', 'numero', 'tipo','setor_originario','status',)
     
@@ -88,16 +88,7 @@ class Ato(models.Model):
         js = ("ato.js",)
 
     def __str__(self):        
-        return '{} nº {}/{} de {} ({})'.format(self.get_tipo, str(self.numero), str(self.ano), self.get_data_por_extenso, str(self.setor_originario.sigla))        
-
-    @property
-    def get_data_por_extenso(self):        
-        mes_ext = {1: 'janeiro', 2 : 'fevereiro', 3: 'março', 4: 'abril', 5: 'maio', 6: 'junho', 
-            7: 'julho', 8: 'agosto', 9: 'setembro', 10: 'outubro', 11: 'novembro', 12: 'dezembro'}
-        data = self.data_documento
-        data_string = '{}/{}/{}'.format(data.day, data.month,data.year)        
-        dia, mes, ano = data_string.split("/")
-        return str(('%s de %s de %s' % (dia, mes_ext[int(mes)], ano)))
+        return '{} nº {}/{} de {} ({})'.format(self.tipo, str(self.numero), str(self.ano), get_data_por_extenso(self.data_documento), str(self.setor_originario.sigla))        
 
     def save(self, *args, **kwargs):                
         self.ano = '{}'.format(self.data_documento.year)
@@ -116,7 +107,6 @@ class Ato(models.Model):
             temp = "Não há"
         return temp
 
-
     def atos_alterantes(self):
         if self.id:
             alterantes = Ato.objects.filter(documentos_alterados=self)
@@ -130,13 +120,27 @@ class Ato(models.Model):
             temp = "Não há"
         return temp    
 
-    @property
-    def get_tipo(self):
-        if self.tipo == 0: return "Resolução"
-        if self.tipo == 1: return "Portaria"
-        if self.tipo == 2: return "Edital"
-        if self.tipo == 3: return "Deliberação"
-        if self.tipo == 4: return "Instrução Normativa"
+class TipoAto(models.Model):
+    nome = models.CharField('nome', max_length=200)
+    class Meta:        
+        verbose_name = u'Tipo de ato'
+        verbose_name_plural = u'Tipos de atos'
+        ordering = ['nome']
+
+    def __str__(self):
+        return self.nome
+
+class Publicacao(models.Model):
+    numero = models.IntegerField('Nº da Edição', blank=False, unique=True)
+    data = models.DateField(null=False, blank=False, verbose_name='Data da publicação', default=date.today())
+
+    class Meta:
+        ordering =['numero']
+        verbose_name = u'Publicação'
+        verbose_name_plural = u'Publicações'
+
+    def __str__(self):
+        return 'Publicação nº {} de {}'.format(str(self.numero), get_data_por_extenso(self.data))
 
 class SetorOriginario(models.Model):
     nome = models.CharField('nome do setor originário', max_length=60, blank=True, null=True, default=None)    
