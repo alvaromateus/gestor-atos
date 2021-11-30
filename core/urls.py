@@ -21,10 +21,14 @@ from django.conf.urls.static import static
 from django.conf import settings
 from ato import views
 from django.views.generic.base import RedirectView
+from ato.api import viewsets as atoviewsets
 
 
 route = routers.DefaultRouter()
-route.register(r'ato', atoviewsets.AtoViewSet, basename='Atos') 
+route.register(r'ato', atoviewsets.AtoViewSet, basename='Atos')
+route.register(r'SetorOriginatario', atoviewsets.SetorViewSet, basename='SetorOriginatario') 
+route.register(r'Assunto', atoviewsets.AssuntoViewSet, basename='Assunto') 
+route.register(r'AssuntoSecundario', atoviewsets.AssuntoSecViewSet, basename='AssuntoSecundario')
 
 urlpatterns = [
     path('api/', include(route.urls), name='api'),
