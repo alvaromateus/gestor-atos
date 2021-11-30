@@ -11,3 +11,4 @@ redis==3.5.3
 flower==0.9.5
 prettyconf==2.2.1
 reportlab
+django-cors-headers
