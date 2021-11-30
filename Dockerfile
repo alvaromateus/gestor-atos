@@ -2,8 +2,8 @@
 FROM python:3.9-slim
 
 ENV PYTHONUNBUFFERED 1
-ENV https_proxy 'http://suportedpp:gti19defenpr@10.15.54.20:8080/'
-ENV http_proxy 'http://suportedpp:gti19defenpr@10.15.54.20:8080/'
+#ENV https_proxy 'http://usuario:senha@servidor_proxy:8080/'
+#ENV http_proxy 'http://usuario:senha@servidor_proxy:8080/'
 RUN apt-get update && apt-get install -y python-dev libpq-dev libssl-dev build-essential git-core libldap2-dev libsasl2-dev libfontconfig1 libxrender1 libfreetype6-dev
 # Cria diretório onde vão ficar os fontes
 RUN mkdir /code
