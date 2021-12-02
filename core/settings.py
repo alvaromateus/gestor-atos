@@ -36,7 +36,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 CKEDITOR_BASEPATH = "/static/ckeditor/ckeditor/"
 CKEDITOR_FILENAME_GENERATOR = 'utils.get_filename'
-CKEDITOR_UPLOAD_PATH = "uploads /"
+CKEDITOR_UPLOAD_PATH = "uploads/"
 
 # Application definition
 
@@ -73,7 +73,9 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(os.path.dirname(__file__), 'templates')
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

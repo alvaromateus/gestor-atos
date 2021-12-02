@@ -4,7 +4,7 @@ from datetime import date
 
 def documento_file_name(instance, filename):    
     ext = filename.split('.')[-1]    
-    return str(instance.numero)+"-"+str(instance.ano) + "." + ext
+    return str(instance.tipo)+"-"+str(instance.numero)+"-"+str(instance.ano)+"-"+str(instance.setor_originario.sigla) + "." + ext
 
 def get_data_por_extenso(data):
         mes_ext = {1: 'janeiro', 2 : 'fevereiro', 3: 'março', 4: 'abril', 5: 'maio', 6: 'junho', 

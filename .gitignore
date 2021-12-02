@@ -8,3 +8,4 @@
 *.rdb
 ato/__pycache__/*.*
 media/*.*
+media/publicacoes/*.*
