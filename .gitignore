@@ -7,3 +7,4 @@
 .env
 *.rdb
 ato/__pycache__/*.*
+media/*.*
